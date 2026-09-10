@@ -1,0 +1,29 @@
+/* Injected button styling on GitHub file pages. */
+.gmh-edit-btn {
+  font: 600 12px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    Arial, sans-serif;
+  color: #ffffff;
+  background: #1f6feb;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.gmh-edit-btn:hover {
+  background: #388bfd;
+}
+
+.gmh-inline {
+  margin-right: 8px;
+}
+
+.gmh-floating {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483000;
+  padding: 8px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}

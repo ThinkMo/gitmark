@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GitMark</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body class="i18n-pending">
+    <h1 data-i18n="appTitle">GitMark</h1>
+
+    <section class="card">
+      <div class="row">
+        <span class="k" data-i18n="tokenStateLabel">Token 状态</span>
+        <span class="v" id="tokenState" data-i18n="tokenStateChecking">检查中…</span>
+      </div>
+      <div class="row" style="margin-top: 10px">
+        <span class="k" data-i18n="langLabel">语言</span>
+        <select id="langSelect" class="lang-select">
+          <option value="zh">中文</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="card">
+      <p id="tabHint" class="hint hint-top" data-i18n="tabHintDefault">
+        在 GitHub 的 Markdown 文件页可直接编辑。
+      </p>
+      <div class="btns">
+        <button id="newFile" class="btn primary" data-i18n="newFile">
+          ✎ 新建
+        </button>
+        <button id="openHere" class="btn" data-i18n="editCurrent" disabled>
+          编辑当前
+        </button>
+      </div>
+    </section>
+
+    <section class="card">
+      <label for="token" data-i18n="patLabel">Personal Access Token</label>
+      <input
+        type="password"
+        id="token"
+        data-i18n-ph="patPlaceholder"
+        placeholder="ghp_… 或 fine-grained token"
+        autocomplete="off"
+      />
+      <div class="btns">
+        <button id="save" class="btn primary" data-i18n="save">保存</button>
+        <button id="clear" class="btn" data-i18n="clear">清除</button>
+      </div>
+      <p class="hint" data-i18n="permHintPopup">
+        需要 <code>repo</code>（或 fine-grained 的 Contents: 读写）权限。Token 仅保存在本地。
+      </p>
+      <a
+        href="https://github.com/settings/tokens?type=beta"
+        target="_blank"
+        class="link"
+        data-i18n="createToken"
+        >创建 Token →</a
+      >
+    </section>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

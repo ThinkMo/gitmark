@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitMark</title>
+    <link rel="stylesheet" href="editor.css" />
+    <script src="preload.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="file-info">
+        <span class="repo" id="repoLabel">—</span>
+        <span class="sep">/</span>
+        <span class="path" id="pathLabel">—</span>
+        <span class="branch" id="branchLabel"></span>
+      </div>
+      <div class="actions">
+        <span class="status" id="status"></span>
+        <button id="commitBtn" class="btn primary" data-i18n="commitBtn" disabled>
+          提交到 GitHub
+        </button>
+      </div>
+    </header>
+
+    <!-- New-file target bar (only visible when creating a file) -->
+    <div class="newfile-bar" id="newFileBar" hidden>
+      <label data-i18n="newFileRepoLabel">仓库</label>
+      <input
+        type="text"
+        id="nfRepo"
+        class="nf-input"
+        data-i18n-ph="newFileRepoPlaceholder"
+        placeholder="owner/repo"
+      />
+      <label data-i18n="newFileBranchLabel">分支</label>
+      <input
+        type="text"
+        id="nfBranch"
+        class="nf-input nf-branch"
+        data-i18n-ph="newFileBranchPlaceholder"
+        placeholder="main"
+      />
+      <label data-i18n="newFilePathLabel">路径</label>
+      <input
+        type="text"
+        id="nfPath"
+        class="nf-input nf-path"
+        data-i18n-ph="newFilePathPlaceholder"
+        placeholder="docs/new-file.md"
+      />
+    </div>
+
+    <div class="toolbar" id="toolbar">
+      <button data-md="bold" data-i18n-title="tbBold" title="加粗 (Ctrl/Cmd+B)">
+        <b>B</b>
+      </button>
+      <button data-md="italic" data-i18n-title="tbItalic" title="斜体 (Ctrl/Cmd+I)">
+        <i>I</i>
+      </button>
+      <button data-md="strike" data-i18n-title="tbStrike" title="删除线"><s>S</s></button>
+      <span class="tb-sep"></span>
+      <button data-md="h1" data-i18n-title="tbH1" title="标题 1">H1</button>
+      <button data-md="h2" data-i18n-title="tbH2" title="标题 2">H2</button>
+      <button data-md="h3" data-i18n-title="tbH3" title="标题 3">H3</button>
+      <span class="tb-sep"></span>
+      <button data-md="ul" data-i18n="tbUl" data-i18n-title="tbUlTitle" title="无序列表">
+        • 列表
+      </button>
+      <button data-md="ol" data-i18n="tbOl" data-i18n-title="tbOlTitle" title="有序列表">
+        1. 列表
+      </button>
+      <button data-md="quote" data-i18n="tbQuote" data-i18n-title="tbQuoteTitle" title="引用">
+        ❝ 引用
+      </button>
+      <button data-md="code" data-i18n-title="tbCodeTitle" title="行内代码">&lt;/&gt;</button>
+      <button data-md="codeblock" data-i18n="tbCodeblock" data-i18n-title="tbCodeblock" title="代码块">
+        代码块
+      </button>
+      <span class="tb-sep"></span>
+      <button data-md="link" data-i18n="tbLink" data-i18n-title="tbLinkTitle" title="链接">
+        🔗 链接
+      </button>
+      <button id="imageBtn" data-i18n="tbImage" data-i18n-title="tbImageTitle" title="插入图片（也支持粘贴 / 拖拽）">
+        🖼 图片
+      </button>
+      <input type="file" id="imageInput" accept="image/*" multiple hidden />
+      <span class="tb-spacer"></span>
+      <button id="themeToggle" class="theme-toggle" data-i18n-title="themeToggleTitle" title="切换明暗主题">
+        🌙 深色
+      </button>
+    </div>
+
+    <main class="split">
+      <section class="pane editor-pane">
+        <textarea
+          id="editor"
+          spellcheck="false"
+          data-i18n-ph="editorPlaceholder"
+          placeholder="在此编辑 Markdown…"
+        ></textarea>
+      </section>
+      <section class="pane preview-pane">
+        <article id="preview" class="markdown-body"></article>
+      </section>
+    </main>
+
+    <footer class="pendingbar" id="pendingbar" hidden>
+      <span class="label" data-i18n="pendingLabel">待上传图片：</span>
+      <span id="pendingList"></span>
+    </footer>
+
+    <!-- Commit dialog -->
+    <div class="modal" id="commitModal" hidden>
+      <div class="modal-card">
+        <h2 data-i18n="modalTitle">提交更改</h2>
+        <label data-i18n="commitMsgLabel">提交信息</label>
+        <input type="text" id="commitMessage" placeholder="Update document.md" />
+        <label data-i18n="commitBranchLabel">目标分支</label>
+        <input type="text" id="commitBranch" />
+        <p class="hint" id="commitHint"></p>
+        <div class="modal-actions">
+          <button class="btn" id="cancelCommit" data-i18n="cancel">取消</button>
+          <button class="btn primary" id="confirmCommit" data-i18n="confirmCommit">
+            确认提交
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../vendor/marked.min.js"></script>
+    <script type="module" src="editor.js"></script>
+  </body>
+</html>
