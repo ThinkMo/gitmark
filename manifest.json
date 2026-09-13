@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "GitMark",
-  "version": "1.0.1",
-  "description": "GitMark：在 GitHub 上直接编辑并提交 Markdown 文档。分栏实时预览、格式工具栏、粘贴/拖拽上传图片，文本与图片一次性原子提交；支持新建文件、明暗主题与中英双语。Token 仅存本地。",
-  "homepage_url": "https://github.com/zhaoxin/gitmark",
-  "author": "Zhao Xin",
+  "version": "1.0.2",
+  "description": "Edit and commit GitHub Markdown files with live preview, formatting tools, image uploads, and atomic commits.",
+  "homepage_url": "https://github.com/ThinkMo/gitmark",
+  "author": "thinkmo",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",

@@ -10,13 +10,15 @@ GitMark 是一款浏览器扩展，用于在 GitHub 上直接编辑并提交 Mar
 
 ### 一句话总结
 
-**GitMark 不设任何自有服务器。所有数据仅保存在你本地浏览器中，网络请求只发往 GitHub 官方 API（`api.github.com`）。我们不收集、不上传、不出售你的任何数据。**
+**GitMark 不设任何自有服务器。Token 与偏好保存在本地；仅为提供核心功能，通过 HTTPS 将必要数据发送给 GitHub 官方 API（`api.github.com`）。开发者不会接收、收集、出售或将这些数据用于广告。**
+
+GitMark 对用户数据的使用仅限于提供其单一用途，并遵守 [Chrome Web Store 用户数据政策](https://developer.chrome.com/docs/webstore/user_data)，包括 Limited Use 要求。GitMark 不会将用户数据用于广告、出售用户数据或允许人工读取用户数据。
 
 ### 我们存储什么
 
 | 数据 | 存储位置 | 用途 | 是否离开你的设备 |
 |---|---|---|---|
-| GitHub Personal Access Token (PAT) | `chrome.storage.local`（浏览器本地） | 调用 GitHub API 读取/提交文件 | 否。仅在请求 `api.github.com` 时作为鉴权头发送给 GitHub |
+| GitHub Personal Access Token (PAT) | `chrome.storage.local`（浏览器本地） | 调用 GitHub API 读取/提交文件 | 是。仅作为 HTTPS 请求的鉴权头发送给 `api.github.com` |
 | 语言偏好（`gmh-lang`） | `chrome.storage.local` / `localStorage` | 记住界面语言（中/英） | 否 |
 | 主题偏好（`gmh-theme`） | `localStorage` | 记住明暗主题 | 否 |
 | 你编辑的 Markdown 内容与插入的图片 | 内存（提交时发送到 GitHub） | 编辑与提交 | 仅在你点击「提交」时发送到 `api.github.com`，写入你指定的仓库 |
@@ -55,13 +57,15 @@ GitMark is a browser extension for editing and committing Markdown files directl
 
 ### In one sentence
 
-**GitMark has no server of its own. All data stays in your local browser, and network requests go only to GitHub's official API (`api.github.com`). We do not collect, upload, or sell any of your data.**
+**GitMark has no server of its own. Tokens and preferences are stored locally; only data required for the extension's core function is sent over HTTPS to GitHub's official API (`api.github.com`). The developer does not receive, collect, sell, or use this data for advertising.**
+
+GitMark's use of user data is limited to providing its single purpose and complies with the [Chrome Web Store User Data Policy](https://developer.chrome.com/docs/webstore/user_data), including the Limited Use requirements. GitMark does not use user data for advertising, sell user data, or allow humans to read user data.
 
 ### What we store
 
 | Data | Where | Purpose | Leaves your device? |
 |---|---|---|---|
-| GitHub Personal Access Token (PAT) | `chrome.storage.local` (local) | Authenticate GitHub API calls to read/commit files | No. Sent only to `api.github.com` as an auth header |
+| GitHub Personal Access Token (PAT) | `chrome.storage.local` (local) | Authenticate GitHub API calls to read/commit files | Yes. Sent only to `api.github.com` as an HTTPS authorization header |
 | Language preference (`gmh-lang`) | `chrome.storage.local` / `localStorage` | Remember UI language (zh/en) | No |
 | Theme preference (`gmh-theme`) | `localStorage` | Remember light/dark theme | No |
 | The Markdown you edit and images you insert | In memory (sent to GitHub on commit) | Editing and committing | Only when you click "Commit", sent to `api.github.com` into your chosen repo |

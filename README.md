@@ -44,6 +44,25 @@ icons/            # 16/32/48/128 图标
 2. 打开右上角「开发者模式」。
 3. 点击「加载已解压的扩展程序」，选择本项目根目录。
 
+## Chrome Web Store 发布
+
+发布元数据、权限说明、审核测试步骤和商店素材清单见 [STORE_LISTING.md](STORE_LISTING.md)。
+
+在 Windows PowerShell 中构建上传包：
+
+```powershell
+.\scripts\build-store-assets.ps1
+.\build.ps1
+```
+
+上传文件生成在 `dist/gitmark-v<version>.zip`。商店截图与宣传图生成在 `images/store/`，不会进入扩展运行包。
+
+在 macOS、Linux 或带有 Git Bash/WSL 的 Windows 环境中，也可以使用：
+
+```bash
+./build.sh
+```
+
 ## 配置 GitHub Token
 
 由于纯前端扩展无法安全保管 OAuth client secret，本扩展使用 **Personal Access Token (PAT)** 进行鉴权。Token 仅保存在浏览器本地（`chrome.storage.local`），只会发往 `api.github.com`。
