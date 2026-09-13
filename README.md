@@ -105,56 +105,6 @@ GitMark 使用 GitHub Personal Access Token（PAT）访问仓库：
 | `Ctrl/Cmd + I` | 斜体 |
 | `Ctrl/Cmd + S` | 打开提交窗口 |
 
-## 项目结构
-
-```text
-manifest.json
-src/
-  background.js   # 打开编辑器标签页的服务工作线程
-  content.js      # 在 GitHub 页面注入编辑按钮
-  content.css
-  github.js       # GitHub REST/Git Data API 封装
-  i18n.js         # 中英文字符串与语言偏好
-editor/
-  editor.html / editor.css / editor.js
-  preload.js      # 渲染前应用主题和语言
-popup/
-  popup.html / popup.css / popup.js
-options/
-  options.html
-vendor/
-  marked.min.js   # 本地内置的 Markdown 渲染库
-icons/            # 扩展图标
-images/           # README 原图与 Chrome Web Store 素材
-```
-
-## Chrome Web Store 发布
-
-发布文案、权限说明、审核步骤和素材清单见 [STORE_LISTING.md](STORE_LISTING.md)。
-
-在 Windows PowerShell 中生成商店素材和上传包：
-
-```powershell
-.\scripts\build-store-assets.ps1
-.\build.ps1
-```
-
-上传包会生成到 `dist/gitmark-v<version>.zip`，商店素材位于 `images/store/`。商店素材、测试和开发文件不会进入扩展运行包。
-
-在 macOS、Linux 或带有 Git Bash/WSL 的 Windows 环境中也可执行：
-
-```bash
-./build.sh
-```
-
-## 实现要点
-
-- **原子提交**：[github.js](src/github.js) 中的 `commitFiles()` 为 Markdown 和图片创建 blob，基于当前分支构建 tree 与 commit，再更新分支 ref。
-- **图片路径**：默认写入 `<Markdown 所在目录>/assets/<时间戳>-<文件名>`。
-- **冲突检测**：记录文件加载时的 blob SHA，提交前重新读取并比较。
-- **预览安全**：写入预览区前会清理脚本节点、内联事件属性和 `javascript:` 链接，并受 Manifest V3 CSP 约束。
-- **GitHub 页面导航**：监听 Turbo、`popstate` 和 History API 变化，在 GitHub 单页导航后重新注入编辑按钮。
-
 ## 已知限制
 
 - 提交操作不会自动创建 Pull Request。
