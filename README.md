@@ -1,118 +1,168 @@
 # GitMark
 
-一个 Chrome 扩展（Manifest V3），用于在 GitHub 上**直接编辑并提交 Markdown 文档**，支持文本编辑、实时预览与图片上传，且文本与图片会在**同一次原子提交**中写入仓库。
+GitMark 是一个 Chrome 扩展（Manifest V3），用于在 GitHub 上直接新建、编辑和提交 Markdown 文件。它提供分栏实时预览、格式工具栏和图片上传，并将 Markdown 与新增图片写入同一次原子提交。
 
-> 隐私：GitMark 无自有服务器，所有数据仅存本地，网络请求只发往 `api.github.com`。详见 [隐私政策](PRIVACY.md)。
+界面默认使用 English，可在扩展弹窗中切换为中文。
+
+> 隐私：GitMark 没有自有服务器。Token 与偏好保存在浏览器本地；执行读取和提交操作时，必要数据仅通过 HTTPS 发送到 GitHub 官方 API。详见[隐私政策](PRIVACY.md)。
+
+## 界面预览
+
+### 扩展弹窗
+
+![GitMark 扩展弹窗，包含编辑当前文件、新建文件、语言切换和 Token 设置](images/store/01-popup.png)
+
+### Markdown 编辑器
+
+![GitMark 分栏 Markdown 编辑器，左侧编辑并在右侧实时预览](images/store/02-editor.png)
 
 ## 功能
 
-- 在 GitHub 的 Markdown 文件页（`.../blob/<branch>/<file>.md`）注入「✎ GitMark」按钮，一键进入编辑器。
-- 分栏编辑器：左侧编辑、右侧实时预览（基于 [marked](https://github.com/markedjs/marked)）。
-- 格式化工具栏：加粗 / 斜体 / 删除线、标题、列表、引用、行内代码 / 代码块、链接。快捷键 `Ctrl/Cmd+B`、`Ctrl/Cmd+I`、`Ctrl/Cmd+S`（提交）。
-- 图片支持三种方式插入：**粘贴**、**拖拽**、**文件选择**。图片会存放到 Markdown 同级的 `assets/` 目录，并自动插入相对路径的引用。
-- **原子提交**：Markdown 文本与所有新增图片通过 Git Data API（blob → tree → commit → ref）一次性提交，避免半成品状态。
-- 编辑已有文件时会做**并发冲突检测**：若文件在你加载后被他人提交修改，提交会被拦截并提示刷新，避免覆盖他人改动。
-- 既能**更新**已有文件，也能**新建**文件。
-- **明暗双主题**：编辑器工具栏可一键切换深色 / 浅色，偏好本地持久化。
-- **中英双语**：在扩展弹窗（主菜单）的「语言」下拉框切换中文 / English，popup、选项页、编辑器与注入按钮均随之切换。
+- 在 GitHub Markdown 文件页注入 **✎ GitMark** 按钮，也可从扩展弹窗打开当前文件。
+- 新建或更新 `.md`、`.markdown`、`.mdx` 文件。
+- 左侧编辑、右侧实时预览，Markdown 渲染由本地内置的 [marked](https://github.com/markedjs/marked) 完成。
+- 支持标题、粗体、斜体、删除线、列表、引用、链接、行内代码和代码块。
+- 支持粘贴、拖放或选择图片，并自动插入相对路径。
+- Markdown 与待上传图片通过 Git Data API 在一次原子提交中写入仓库。
+- 编辑已有文件时检测远端冲突，避免覆盖加载后发生的修改。
+- 支持 English / 中文及浅色 / 深色主题，偏好保存在本地。
 
-## 目录结构
+## 快速开始
 
+### 1. 安装扩展
+
+当前可通过开发者模式加载：
+
+1. 下载或克隆本仓库。
+2. 在 Chrome 地址栏打开 `chrome://extensions`。
+3. 打开右上角的 **开发者模式**。
+4. 点击 **加载已解压的扩展程序**，选择本项目根目录。
+5. 建议将 GitMark 固定到浏览器工具栏，方便打开弹窗。
+
+### 2. 配置 GitHub Token
+
+GitMark 使用 GitHub Personal Access Token（PAT）访问仓库：
+
+1. 打开 [GitHub Fine-grained tokens](https://github.com/settings/tokens?type=beta) 页面创建 Token。
+2. 在 **Repository access** 中选择需要编辑的仓库。
+3. 在 **Repository permissions** 中将 **Contents** 设置为 **Read and write**。
+4. 点击浏览器工具栏中的 GitMark 图标。
+5. 将 Token 粘贴到 **Personal Access Token** 输入框并点击 **Save**。
+6. 显示 `Connected @<username>` 表示验证成功。
+
+也可以使用经典 Token，并授予 `repo` 权限。Token 保存在 `chrome.storage.local`，只作为 HTTPS 鉴权信息发送给 `api.github.com`。
+
+### 3. 编辑已有 Markdown 文件
+
+1. 在 GitHub 中打开一个 `.md`、`.markdown` 或 `.mdx` 文件。
+2. 点击 GitHub 页面中的 **✎ GitMark**；也可以打开扩展弹窗并点击 **Edit current**。
+3. 在左侧修改 Markdown，右侧会同步显示预览。
+4. 根据需要使用工具栏或添加图片。
+5. 点击右上角的 **Commit to GitHub**。
+6. 检查提交信息和目标分支，然后点击 **Commit**。
+7. 提交成功后可点击 **View commit** 查看 GitHub 提交记录。
+
+如果文件在打开编辑器后被其他提交修改，GitMark 会取消本次提交并提示重新加载最新内容。
+
+### 4. 新建 Markdown 文件
+
+1. 打开 GitMark 弹窗并点击 **✎ New file**。
+2. 填写 **Repo**，格式为 `owner/repo`。
+3. 填写 **Branch**；留空时使用仓库默认分支。
+4. 填写 **Path**，例如 `docs/getting-started.md`。
+5. 输入内容并点击 **Commit to GitHub**。
+6. 填写提交信息并确认提交。
+
+如果当前标签页位于某个 GitHub 仓库，GitMark 会尽量自动填写仓库和分支。目标路径已经存在时，新建操作会被拦截，避免覆盖原文件。
+
+### 5. 添加图片
+
+可以通过以下方式添加图片：
+
+- 点击工具栏中的 **🖼 Image** 选择本地图片。
+- 将图片拖放到编辑区。
+- 直接从剪贴板粘贴图片。
+
+图片会暂存在编辑器中，并在提交时写入 Markdown 文件同级的 `assets/` 目录。GitMark 会自动插入相对路径，例如：
+
+```markdown
+![example](assets/1712345678901-example.png)
 ```
+
+新建文件时需要先填写 **Path**，GitMark 才能确定图片目录。关闭页面前未提交的图片不会上传到 GitHub。
+
+### 6. 切换语言和主题
+
+- 在扩展弹窗的 **Language** 下拉框中选择 **English** 或 **中文**。默认语言为 English。
+- 在编辑器右上角点击 **🌙 Dark** 或 **☀️ Light** 切换主题。
+- 语言和主题偏好会保存在浏览器本地。
+
+## 常用快捷键
+
+| 快捷键 | 操作 |
+|---|---|
+| `Ctrl/Cmd + B` | 加粗 |
+| `Ctrl/Cmd + I` | 斜体 |
+| `Ctrl/Cmd + S` | 打开提交窗口 |
+
+## 项目结构
+
+```text
 manifest.json
 src/
   background.js   # 打开编辑器标签页的服务工作线程
   content.js      # 在 GitHub 页面注入编辑按钮
   content.css
-  github.js       # GitHub REST/Git Data API 封装（鉴权、读取、原子提交）
-  i18n.js         # 中英文字符串表与翻译函数（各页面共用）
+  github.js       # GitHub REST/Git Data API 封装
+  i18n.js         # 中英文字符串与语言偏好
 editor/
-  editor.html / editor.css / editor.js   # 分栏编辑器
-  preload.js      # 渲染前同步应用主题/语言，避免闪烁（外置以符合 CSP）
+  editor.html / editor.css / editor.js
+  preload.js      # 渲染前应用主题和语言
 popup/
-  popup.html / popup.css / popup.js       # Token 设置 + 语言切换 + 快捷入口
+  popup.html / popup.css / popup.js
 options/
-  options.html    # 完整设置页（复用 popup.js）
+  options.html
 vendor/
   marked.min.js   # 本地内置的 Markdown 渲染库
-icons/            # 16/32/48/128 图标
+icons/            # 扩展图标
+images/           # README 原图与 Chrome Web Store 素材
 ```
-
-## 安装（开发者模式加载）
-
-1. 打开 `chrome://extensions`。
-2. 打开右上角「开发者模式」。
-3. 点击「加载已解压的扩展程序」，选择本项目根目录。
 
 ## Chrome Web Store 发布
 
-发布元数据、权限说明、审核测试步骤和商店素材清单见 [STORE_LISTING.md](STORE_LISTING.md)。
+发布文案、权限说明、审核步骤和素材清单见 [STORE_LISTING.md](STORE_LISTING.md)。
 
-在 Windows PowerShell 中构建上传包：
+在 Windows PowerShell 中生成商店素材和上传包：
 
 ```powershell
 .\scripts\build-store-assets.ps1
 .\build.ps1
 ```
 
-上传文件生成在 `dist/gitmark-v<version>.zip`。商店截图与宣传图生成在 `images/store/`，不会进入扩展运行包。
+上传包会生成到 `dist/gitmark-v<version>.zip`，商店素材位于 `images/store/`。商店素材、测试和开发文件不会进入扩展运行包。
 
-在 macOS、Linux 或带有 Git Bash/WSL 的 Windows 环境中，也可以使用：
+在 macOS、Linux 或带有 Git Bash/WSL 的 Windows 环境中也可执行：
 
 ```bash
 ./build.sh
 ```
 
-## 配置 GitHub Token
-
-由于纯前端扩展无法安全保管 OAuth client secret，本扩展使用 **Personal Access Token (PAT)** 进行鉴权。Token 仅保存在浏览器本地（`chrome.storage.local`），只会发往 `api.github.com`。
-
-1. 点击扩展图标，在弹窗底部填入 Token 并保存；或右键扩展 → 选项。
-2. Token 权限：
-   - **经典 Token**：勾选 `repo`。
-   - **Fine-grained Token**：对目标仓库授予 `Contents: Read and write`。
-3. 保存后弹窗会显示 `已连接 @<用户名>`，即验证通过。
-
-创建入口：<https://github.com/settings/tokens?type=beta>
-
-## 使用
-
-### 编辑已有文件
-
-1. 在 GitHub 上打开任意 Markdown 文件（`.md/.markdown/.mdx` 等）。
-2. 点击页面中的「✎ GitMark」按钮（或在扩展弹窗点「编辑当前」）。
-3. 在编辑器中修改文本、粘贴/拖拽/选择图片。
-4. 点击「提交到 GitHub」，填写提交信息与目标分支，确认后即完成单次提交，并给出提交链接。
-
-### 新建文件
-
-1. 点击扩展图标，在弹窗点「✎ 新建 Markdown 文件」。若当前正停留在某仓库页，会自动预填 `owner/repo` 与分支。
-2. 编辑器顶部会出现「仓库 / 分支 / 路径」栏：填写目标仓库（`owner/repo`）、分支（留空则用默认分支）与文件路径（如 `docs/note.md`）。
-3. 编辑内容并可插入图片（图片按填写的路径就近存入 `assets/`）。
-4. 点击「提交到 GitHub」确认。提交前会检查目标路径是否已存在，避免误覆盖；创建成功后自动切换为编辑模式。
-
 ## 实现要点
 
-- **原子提交**在 [github.js](src/github.js) 的 `commitFiles()` 中实现：为 Markdown 与每张图片创建 blob，构建基于当前分支 `base_tree` 的新 tree，创建 commit 并 `PATCH` 分支 ref。
-- **图片路径**：默认写入 `<markdown 所在目录>/assets/<时间戳>-<文件名>`，插入的 Markdown 引用使用相对该文档的路径。
-- **冲突检测**：编辑现有文件时记录加载时的 blob sha，提交前重新拉取比对；不一致则中止提交，防止覆盖他人改动。
-- **国际化**：[i18n.js](src/i18n.js) 提供 zh/en 字符串表；语言存于 `localStorage` 并镜像到 `chrome.storage`，供运行在 github.com 域的 [content.js](src/content.js) 读取以本地化注入按钮。
-- **预览安全**：预览区在写入前对 `marked` 输出做一次消毒（移除脚本类节点、内联事件属性与 `javascript:` 链接），叠加 MV3 CSP 双重防护。
-- **SPA 导航**：GitHub 使用 Turbo/pushState，[content.js](src/content.js) 监听 `turbo:load`、`popstate` 及 `pushState/replaceState` 以在导航后重新注入按钮。
+- **原子提交**：[github.js](src/github.js) 中的 `commitFiles()` 为 Markdown 和图片创建 blob，基于当前分支构建 tree 与 commit，再更新分支 ref。
+- **图片路径**：默认写入 `<Markdown 所在目录>/assets/<时间戳>-<文件名>`。
+- **冲突检测**：记录文件加载时的 blob SHA，提交前重新读取并比较。
+- **预览安全**：写入预览区前会清理脚本节点、内联事件属性和 `javascript:` 链接，并受 Manifest V3 CSP 约束。
+- **GitHub 页面导航**：监听 Turbo、`popstate` 和 History API 变化，在 GitHub 单页导航后重新注入编辑按钮。
 
 ## 已知限制
 
-- 通过 REST API 提交属于普通提交，不生成 Pull Request（如需 PR 可自行在目标分支基础上扩展）。
-- 大文件受 GitHub Contents/Git Data API 大小限制约束。
-- 图片以 base64 blob 形式上传，超大图片会较慢。
+- 提交操作不会自动创建 Pull Request。
+- Token 对目标仓库必须具有读取和写入内容的权限。
+- 受 GitHub API 文件大小和请求限制约束，超大图片上传会比较慢。
+- 受保护分支可能禁止直接提交，此时需要换用允许写入的分支并自行创建 Pull Request。
 
-## 依赖
+## 依赖与许可
 
-- [marked](https://github.com/markedjs/marked) v12.0.2（MIT，已内置于 `vendor/`）。
-
-## 许可
-
-本项目基于 [MIT 许可](LICENSE) 开源，可自由使用、修改、分发与商用，仅需保留版权与许可声明。
-
-内置的 [marked](https://github.com/markedjs/marked)（Copyright © 2011-2024 Christopher Jeffrey）同为 MIT 许可。
-
+- [marked](https://github.com/markedjs/marked) v12.0.2，MIT License，已内置于 `vendor/`。
+- GitMark 基于 [MIT License](LICENSE) 开源。
