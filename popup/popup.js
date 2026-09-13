@@ -134,50 +134,87 @@ function parseRepoContext(urlStr) {
 
 /** Detected Markdown file on the active tab, or null. Set by initTabShortcut. */
 let tabFileInfo = null;
+let activeTabUrl = "";
+let tabLookupError = "";
 
 /** Render the tab hint in the current language (re-callable on lang change). */
 function updateTabHint() {
   if (!tabHint) return;
-  tabHint.textContent = tabFileInfo
-    ? `${tabFileInfo.owner}/${tabFileInfo.repo} · ${tabFileInfo.path}`
-    : t("tabHintNotMd");
+  if (tabLookupError) {
+    tabHint.textContent = t("tabLookupFailed", { error: tabLookupError });
+  } else {
+    tabHint.textContent = tabFileInfo
+      ? `${tabFileInfo.owner}/${tabFileInfo.repo} · ${tabFileInfo.path}`
+      : t("tabHintNotMd");
+  }
+}
+
+/** Ask the service worker to open an editor and keep the popup visible on failure. */
+async function openEditor(params, trigger) {
+  trigger.disabled = true;
+  setStatus(t("openingEditor"));
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: "OPEN_EDITOR",
+      params,
+    });
+    if (!response || response.ok !== true) {
+      throw new Error(response?.error || t("openEditorNoResponse"));
+    }
+    window.close();
+  } catch (error) {
+    const detail = error?.message || String(error);
+    setStatus(t("openEditorFailed", { error: detail }), "bad");
+    trigger.disabled = false;
+  }
 }
 
 async function initTabShortcut() {
   // The options page reuses this script but has no tab shortcut UI.
-  if (!openHere || !tabHint) return;
-  const [tab] = await chrome.tabs.query({
-    active: true,
-    currentWindow: true,
-  });
-  const url = (tab && tab.url) || "";
-
-  tabFileInfo = parseBlob(url);
-  if (tabFileInfo) {
-    openHere.disabled = false;
-    openHere.addEventListener("click", () => {
-      chrome.runtime.sendMessage({ type: "OPEN_EDITOR", params: tabFileInfo });
-      window.close();
-    });
-  }
-  updateTabHint();
-
-  // New-file button: prefill repo/branch from the current repo page if any.
   if (newFileBtn) {
+    // Bind before querying the current tab so the action remains available
+    // even when Chrome cannot provide tab context.
     newFileBtn.addEventListener("click", () => {
-      const ctx = parseRepoContext(url) || {};
-      chrome.runtime.sendMessage({
-        type: "OPEN_EDITOR",
-        params: {
+      const ctx = parseRepoContext(activeTabUrl) || {};
+      return openEditor(
+        {
           mode: "new",
           owner: ctx.owner || "",
           repo: ctx.repo || "",
           branch: ctx.branch || "",
         },
-      });
-      window.close();
+        newFileBtn
+      );
     });
   }
+
+  if (openHere) {
+    openHere.addEventListener("click", () => {
+      if (!tabFileInfo) return undefined;
+      return openEditor(tabFileInfo, openHere);
+    });
+  }
+
+  if (!openHere || !tabHint) return;
+  try {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+    activeTabUrl = (tab && tab.url) || "";
+    tabLookupError = "";
+  } catch (error) {
+    tabFileInfo = null;
+    tabLookupError = error?.message || String(error);
+    updateTabHint();
+    return;
+  }
+
+  tabFileInfo = parseBlob(activeTabUrl);
+  if (tabFileInfo) {
+    openHere.disabled = false;
+  }
+  updateTabHint();
 }
 
 applyStaticI18n();

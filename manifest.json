@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GitMark",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GitMark：在 GitHub 上直接编辑并提交 Markdown 文档。分栏实时预览、格式工具栏、粘贴/拖拽上传图片，文本与图片一次性原子提交；支持新建文件、明暗主题与中英双语。Token 仅存本地。",
   "homepage_url": "https://github.com/zhaoxin/gitmark",
   "author": "Zhao Xin",

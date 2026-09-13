@@ -20,8 +20,15 @@ function buildEditorUrl(params) {
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg && msg.type === "OPEN_EDITOR") {
-    chrome.tabs.create({ url: buildEditorUrl(msg.params || {}) });
-    sendResponse({ ok: true });
+    chrome.tabs
+      .create({ url: buildEditorUrl(msg.params || {}) })
+      .then((tab) => sendResponse({ ok: true, tabId: tab?.id }))
+      .catch((error) =>
+        sendResponse({
+          ok: false,
+          error: error?.message || String(error),
+        })
+      );
     return true;
   }
   return false;

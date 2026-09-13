@@ -9,7 +9,7 @@
 
 export const LANG_KEY = "gmh-lang";
 export const SUPPORTED = ["zh", "en"];
-export const DEFAULT_LANG = "zh";
+export const DEFAULT_LANG = "en";
 
 const STRINGS = {
   zh: {
@@ -28,8 +28,12 @@ const STRINGS = {
     langLabel: "语言",
     tabHintDefault: "在 GitHub 的 Markdown 文件页可直接编辑。",
     tabHintNotMd: "当前标签页不是 GitHub 的 Markdown 文件。",
+    tabLookupFailed: "无法读取当前标签页：{error}",
     editCurrent: "编辑当前",
     newFile: "✎ 新建",
+    openingEditor: "正在打开编辑器…",
+    openEditorNoResponse: "后台没有返回结果",
+    openEditorFailed: "打开编辑器失败：{error}",
     patLabel: "Personal Access Token",
     patPlaceholder: "ghp_… 或 fine-grained token",
     save: "保存",
@@ -159,8 +163,12 @@ const STRINGS = {
     langLabel: "Language",
     tabHintDefault: "You can edit directly on a GitHub Markdown file page.",
     tabHintNotMd: "The current tab is not a GitHub Markdown file.",
+    tabLookupFailed: "Unable to read the current tab: {error}",
     editCurrent: "Edit current",
     newFile: "✎ New file",
+    openingEditor: "Opening editor…",
+    openEditorNoResponse: "The background worker returned no result",
+    openEditorFailed: "Failed to open editor: {error}",
     patLabel: "Personal Access Token",
     patPlaceholder: "ghp_… or fine-grained token",
     save: "Save",

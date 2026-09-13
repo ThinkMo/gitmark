@@ -16,10 +16,18 @@ const BTN_ID = "gmh-edit-btn";
  * chrome.storage.local (mirrored there by src/i18n.js setLang()).
  */
 const LABELS = {
-  zh: { text: "✎ GitMark", title: "在 GitMark 中编辑此文件" },
-  en: { text: "✎ GitMark", title: "Edit this file in GitMark" },
+  zh: {
+    text: "✎ GitMark",
+    title: "在 GitMark 中编辑此文件",
+    openFailed: "打开编辑器失败",
+  },
+  en: {
+    text: "✎ GitMark",
+    title: "Edit this file in GitMark",
+    openFailed: "Failed to open editor",
+  },
 };
-let lang = "zh";
+let lang = "en";
 
 /** Parse an owner/repo/branch/path tuple from a blob URL, or null. */
 function parseBlobUrl() {
@@ -38,27 +46,47 @@ function makeButton(info) {
   btn.id = BTN_ID;
   btn.type = "button";
   btn.className = "gmh-edit-btn";
-  const labels = LABELS[lang] || LABELS.zh;
-  btn.textContent = labels.text;
-  btn.title = labels.title;
-  btn.addEventListener("click", (e) => {
+  updateButton(btn, info);
+  btn.addEventListener("click", async (e) => {
     e.preventDefault();
-    chrome.runtime.sendMessage({
-      type: "OPEN_EDITOR",
-      params: {
-        owner: info.owner,
-        repo: info.repo,
-        branch: info.branch,
-        path: info.path,
-      },
-    });
+    const labels = LABELS[lang] || LABELS.zh;
+    const current = btn.gitmarkFileInfo;
+    btn.textContent = labels.text;
+    btn.title = labels.title;
+    btn.disabled = true;
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: "OPEN_EDITOR",
+        params: current,
+      });
+      if (!response || response.ok !== true) {
+        throw new Error(response?.error || labels.openFailed);
+      }
+    } catch (error) {
+      btn.textContent = "⚠ GitMark";
+      btn.title = `${labels.openFailed}: ${error?.message || String(error)}`;
+    } finally {
+      btn.disabled = false;
+    }
   });
   return btn;
 }
 
+/** Keep the mounted button in sync across GitHub's client-side navigation. */
+function updateButton(btn, info) {
+  const labels = LABELS[lang] || LABELS.zh;
+  btn.gitmarkFileInfo = { ...info };
+  btn.textContent = labels.text;
+  btn.title = labels.title;
+}
+
 /** Find a good place to mount the button near GitHub's file toolbar. */
 function mountButton(info) {
-  if (document.getElementById(BTN_ID)) return;
+  const existing = document.getElementById(BTN_ID);
+  if (existing) {
+    updateButton(existing, info);
+    return;
+  }
 
   // Prefer the file header actions area; fall back to a floating button.
   const anchor =
@@ -91,9 +119,8 @@ function refresh() {
   // GitHub renders the header asynchronously; retry a few times.
   let tries = 0;
   const tick = () => {
-    if (parseBlobUrl() && !document.getElementById(BTN_ID)) {
-      mountButton(info);
-    }
+    const currentInfo = parseBlobUrl();
+    if (currentInfo) mountButton(currentInfo);
     if (++tries < 10 && !document.getElementById(BTN_ID)) {
       setTimeout(tick, 300);
     }

@@ -14,9 +14,10 @@
     document.documentElement.setAttribute("data-theme", t);
 
     var lang = localStorage.getItem("gmh-lang");
-    if (lang !== "zh" && lang !== "en") lang = "zh";
+    if (lang !== "zh" && lang !== "en") lang = "en";
     document.documentElement.setAttribute("lang", lang === "en" ? "en" : "zh-CN");
   } catch (e) {
     document.documentElement.setAttribute("data-theme", "dark");
+    document.documentElement.setAttribute("lang", "en");
   }
 })();
